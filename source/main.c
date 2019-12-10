@@ -206,25 +206,21 @@ int main(void)
     {
     	turn_off_led_color('G');
     	xSemaphoreTake(semMutex, 0);
-    	counter++;
     }
     else
     {
     	turn_on_led_color('G');
     	xSemaphoreGive(semMutex);
-    	counter++;
     }
     sem_count = uxSemaphoreGetCount(semMutex);
     if(!sem_count)
     {
     	turn_off_led_color('G');
     	xSemaphoreGive(semMutex);
-    	counter++;
     }
     else
     {
     	turn_on_led_color('G');
-    	counter++;
     }
 
 #if PGM_2
