@@ -165,37 +165,6 @@ buffer_errors circular_buffer_realloc(cbuf_handle_t cbuf, size_t newSize)
 
 	return buffer_realloc_fail;
 
-//	uint8_t prev_size;
-//	if(cbuf->count == cbuf->max)
-//	{
-//		/* Reallocate the memory */
-//		uint8_t* buffer_realloc;
-//		buffer_realloc = (uint8_t*)realloc(cbuf->buffer, cbuf->max * 2);
-//		cbuf->buffer = buffer_realloc;
-//
-//		/* Ensure reallocation worked */
-//		if(circular_buf_valid(cbuf) == buffer_invalid)
-//			{
-//				log_string_detail(Debug, Circular_buffer_realloc, "Re-allocation Failed");
-//				return buffer_init_fail;
-//			}
-//
-//			/* Adjust values to reflect change */
-//			prev_size = cbuf->max;
-//			cbuf->max = 2  * cbuf->max;
-//
-//
-//			/*	TODO: Need to re-fill the buffer with what it had before */
-//
-//
-//			return buffer_success;
-//	}
-//	else
-//	{
-//		logString("Realloc not done, cause buffer still not full");
-//		return BUF_FAIL;
-//	}
-
 }
 
 

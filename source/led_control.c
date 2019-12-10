@@ -31,9 +31,6 @@ void delay_led(uint16_t num)
  */
 void turn_on_led_color(char color)
 {
-	LED_RED_INIT(1);
-	LED_BLUE_INIT(1);
-	LED_GREEN_INIT(1);
 	LED_RED_OFF();
 	LED_BLUE_OFF();
 	LED_GREEN_OFF();
@@ -48,37 +45,28 @@ void turn_on_led_color(char color)
 			log_string_detail(Debug, Turn_on_LED_color, "LED RED ON");
 		else if(log_level_a == 0)
 			log_string_detail(Test, Turn_on_LED_color, "LED RED in Test Mode");
-		delay_led(20000);
 	}
 	else if(color == 'B') {
     	LED_RED_OFF(); /*!< Turn off target LED_RED */
 		LED_GREEN_OFF(); /*!< Turn off target LED_GREEN */
     	LED_BLUE_ON(); /*!< Turn on target LED_BLUE */
-#ifdef NORMAL
-		log_string_detail(Status, Turn_on_LED_color, "");
-#endif
-#ifdef DEBUG_LOG
-		log_string_detail(Debug, Turn_on_LED_color, "LED BLUE ON");
-#endif
-#ifdef TEST
-		log_string_detail(Test, Turn_on_LED_color, "LED BLUE in Test Mode");
-#endif
-    	delay_led(20000);
+		if(log_level_a == 2)
+			log_string_detail(Status, Turn_on_LED_color, "");
+		else if(log_level_a == 1)
+			log_string_detail(Debug, Turn_on_LED_color, "LED BLUE ON");
+		else if(log_level_a == 0)
+			log_string_detail(Test, Turn_on_LED_color, "LED BLUE in Test Mode");
 	}
 	else if(color == 'G') {
 		LED_RED_OFF(); /*!< Turn off target LED_RED */
 		LED_BLUE_OFF(); /*!< Turn off target LED_BLUE */
 		LED_GREEN_ON(); /*!< Turn on target LED_GREEN */
-#ifdef NORMAL
-		log_string_detail(Status, Turn_on_LED_color, "");
-#endif
-#ifdef DEBUG_LOG
-		log_string_detail(Debug, Turn_on_LED_color, "LED GREEN ON");
-#endif
-#ifdef TEST
-		log_string_detail(Test, Turn_on_LED_color, "LED GREEN in Test Mode");
-#endif
-		delay_led(20000);
+		if(log_level_a == 2)
+			log_string_detail(Status, Turn_on_LED_color, "");
+		else if(log_level_a == 1)
+			log_string_detail(Debug, Turn_on_LED_color, "LED GREEN ON");
+		else if(log_level_a == 0)
+			log_string_detail(Test, Turn_on_LED_color, "LED GREEN in Test Mode");
 	}
 }
 
@@ -94,7 +82,6 @@ void toggle_led_color(char color)
 			log_string_detail(Debug, Toggle_LED_color, "LED RED Toggling");
 		else if(log_level_a == 0)
 			log_string_detail(Test, Toggle_LED_color, "LED RED in Test Mode");
-		delay_led(20000);
 	}
 	else if(color == 'B') {
     	LED_RED_OFF(); /*!< Turn off target LED_RED */
@@ -106,21 +93,16 @@ void toggle_led_color(char color)
 			log_string_detail(Debug, Toggle_LED_color, "LED BLUE Toggling");
 		else if(log_level_a == 0)
 			log_string_detail(Test, Toggle_LED_color, "LED BLUE in Test Mode");
-    	delay_led(20000);
 	}
 	else if(color == 'G') {
 		LED_RED_OFF(); /*!< Turn off target LED_RED */
 		LED_BLUE_OFF(); /*!< Turn off target LED_BLUE */
 		LED_GREEN_TOGGLE(); /*!< Turn on target LED_GREEN */
-#ifdef NORMAL
-		log_string_detail(Status, Toggle_LED_color, "");
-#endif
-#ifdef DEBUG_LOG
-		log_string_detail(Debug, Toggle_LED_color, "LED GREEN Toggling");
-#endif
-#ifdef TEST
-		log_string_detail(Test, Toggle_LED_color, "LED GREEN in Test Mode");
-#endif
-		delay_led(20000);
+		if(log_level_a == 2)
+			log_string_detail(Status, Toggle_LED_color, "");
+		else if(log_level_a == 1)
+			log_string_detail(Debug, Toggle_LED_color, "LED GREEN Toggling");
+		else if(log_level_a == 0)
+			log_string_detail(Test, Toggle_LED_color, "LED GREEN in Test Mode");
 	}
 }

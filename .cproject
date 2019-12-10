@@ -71,7 +71,7 @@
 									<listOptionValue builtIn="false" value="FRDM_KL25Z"/>
 									<listOptionValue builtIn="false" value="FREEDOM"/>
 									<listOptionValue builtIn="false" value="CR_INTEGER_PRINTF"/>
-									<listOptionValue builtIn="false" value="PRINTF_FLOAT_ENABLE=0"/>
+									<listOptionValue builtIn="false" value="PRINTF_FLOAT_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="SDK_DEBUGCONSOLE_UART"/>
 									<listOptionValue builtIn="false" value="SDK_DEBUGCONSOLE_ITM"/>
 									<listOptionValue builtIn="false" value="__MCUXPRESSO"/>
