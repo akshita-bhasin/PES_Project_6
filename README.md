@@ -33,7 +33,9 @@ Build Using Macros:
 3.  Program 1 and 2 are executed using #ifdef macros.
     
     ```c
-    #ifdef PGM_1 // runs program 1#ifdef PGM_2 // runs program 2
+    #if PGM_1 // runs program 1
+    
+    #if PGM_2 // runs program 2
     ```
     
 
