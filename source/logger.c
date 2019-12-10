@@ -7,7 +7,7 @@
 
 #include "logger.h"
 
-log_level log_level_a = 1;
+log_level log_level_a = 2;
 char timestamp_format[100];
 
 /* function name : log_string_detail

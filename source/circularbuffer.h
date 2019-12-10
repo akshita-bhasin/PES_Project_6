@@ -15,9 +15,9 @@
 #include "logger.h"
 
 typedef struct {
-	uint8_t* buffer;
-	uint8_t * head;
-	uint8_t * tail;
+	uint16_t* buffer;
+	uint16_t * head;
+	uint16_t * tail;
 	uint8_t max; //of the buffer
 	size_t count;
 	bool full;
@@ -62,11 +62,11 @@ void circular_buf_reset(cbuf_handle_t cbuf);
 
 /// Put Version 2 rejects new data if the buffer is full
 /// Returns 0 on success, -1 if buffer is full
-buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint8_t data);
+buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint16_t data);
 
 /// Retrieve a value from the buffer
 /// Returns 0 on success, -1 if the buffer is empty
-buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint8_t * data);
+buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint16_t * data);
 
 /// Returns true if the buffer is empty
 buffer_errors circular_buf_empty(cbuf_handle_t cbuf);

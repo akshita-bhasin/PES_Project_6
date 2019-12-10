@@ -12,7 +12,7 @@ cbuf_handle_t circular_buf_init(size_t size)
 {
 	uint8_t* buffer_init;
 	cbuf_handle_t cbuf = (circ_bbuf_t*)malloc(sizeof(circ_bbuf_t));
-	buffer_init = (uint8_t*)malloc(sizeof(uint8_t)*size);
+	buffer_init = (uint16_t*)malloc(sizeof(uint16_t)*size);
 	cbuf->buffer = buffer_init;
 	cbuf->max = size;
 	cbuf->head = buffer_init;
@@ -99,7 +99,7 @@ buffer_errors circular_buf_size(cbuf_handle_t cbuf)
     }
 }
 
-buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint8_t data) //push
+buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint16_t data) //push
 {
 
     if(cbuf == NULL)
@@ -123,7 +123,7 @@ buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint8_t data) //push
 
 }
 
-buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint8_t * data) //pop
+buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint16_t * data) //pop
 {
 
     if(cbuf == NULL)

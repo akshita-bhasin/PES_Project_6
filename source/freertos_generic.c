@@ -71,7 +71,7 @@ void dac_lookup_init(void)
 
 adc16_config_t adc16ConfigStruct;
 adc16_channel_config_t adc16ChannelConfigStruct;
-uint16_t adc_buffer[64];
+uint16_t adc_array[64];
 uint8_t adc_index = 0;
 
 SemaphoreHandle_t semMutex;
@@ -162,20 +162,17 @@ int main(void)
     DMA_CreateHandle(&g_DMA_Handle, DMA0, DMA_CHANNEL);
 
     //Referred to sd example for free_rtos_mutex
-//    semMutex = xSemaphoreCreateMutex();
+    semMutex = xSemaphoreCreateMutex();
 
 
-//    xTaskCreate(dacTask, "DAC Task", configMINIMAL_STACK_SIZE + 100, NULL, mainDAC_TASK_PRIORITY, &DAC_Handle);
-//    xTaskCreate(adcTask, "ADC Task", configMINIMAL_STACK_SIZE + 100, NULL, mainADC_TASK_PRIORITY, &ADC_Handle);
-//    xTaskCreate(dspTask, "DSP Task", configMINIMAL_STACK_SIZE + 400, NULL, mainDSP_TASK_PRIORITY, &DSP_Handle);
+    xTaskCreate(dacTask, "DAC Task", configMINIMAL_STACK_SIZE + 100, NULL, mainDAC_TASK_PRIORITY, &DAC_Handle);
+    xTaskCreate(adcTask, "ADC Task", configMINIMAL_STACK_SIZE + 100, NULL, mainADC_TASK_PRIORITY, &ADC_Handle);
+    xTaskCreate(dspTask, "DSP Task", configMINIMAL_STACK_SIZE + 400, NULL, mainDSP_TASK_PRIORITY, &DSP_Handle);
 
-    xDACSoftwareTimer = xTimerCreate("DACTimer",mainSOFTWARE_TIMER_PERIOD_MS,pdTRUE,(void *)0,vDACTimerCallback);
-
-        /* Start the created timer.  A block time of zero is used as the timer
-        command queue cannot possibly be full here (this is the first timer to
-        be created, and it is not yet running). */
-        if(xTimerStart(xDACSoftwareTimer, 0) == pdTRUE)
-        	log_string_detail(log_level_a, DACTask, "In DAC Logger");
+//    xDACSoftwareTimer = xTimerCreate("DACTimer",mainSOFTWARE_TIMER_PERIOD_MS,pdTRUE,(void *)0,vDACTimerCallback);
+//
+//        if(xTimerStart(xDACSoftwareTimer, 0) == pdTRUE)
+//        	log_string_detail(log_level_a, DACTask, "In DAC Logger");
 
     /* Start the tasks and timer running. */
     vTaskStartScheduler();
@@ -187,49 +184,129 @@ int main(void)
 /*!
  * @brief Task prvQueueSendTask periodically sending message.
  */
-//static void adcTask(void *pvParameters)
-//{
-//	char adc_val[20];
-//	TickType_t PreviousWakeTime = xTaskGetTickCount();
-//    for (;;)
-//    {
-//    	ADC16_SetChannelConfig(ADC0, 0U, &adc16ChannelConfigStruct);
-//    	while (0U == (kADC16_ChannelConversionDoneFlag & ADC16_GetChannelStatusFlags(ADC0, 0U)));
-//        adc_buffer[adc_index] = ADC16_GetChannelConversionValue(ADC0, 0U);
-//        circular_buf_put2(adcBuffer, adc_buffer[adc_index]);
-//        adc_index++;
-//        //if(adc_index == 64)
-//        if(circular_buf_full(adcBuffer))
-//        {
-//        	program_count += 1;
-//        	adcBuffer->count=0;
-////        	xSemaphoreTake(semMutex,(TickType_t) 100);
-//        	turn_on_led_color('R');
-//        	for(uint8_t index = 0; index < 64; index++)
+static void adcTask(void *pvParameters)
+{
+	char adc_val[20];
+	uint8_t i;
+	TickType_t PreviousWakeTime = xTaskGetTickCount();
+    for (;;)
+    {
+    	ADC16_SetChannelConfig(ADC0, 0U, &adc16ChannelConfigStruct);
+    	while (0U == (kADC16_ChannelConversionDoneFlag & ADC16_GetChannelStatusFlags(ADC0, 0U)));
+        adc_array[adc_index] = ADC16_GetChannelConversionValue(ADC0, 0U);
+        circular_buf_put2(adcBuffer, adc_array[adc_index]);
+        adc_index++;
+    	//circular_buf_put2(&adcBuffer, ADC16_GetChannelConversionValue(ADC0, 0U));
+        //if(adc_index == 64)
+        if(circular_buf_full(adcBuffer) == buffer_full)
+        {
+        	program_count += 1;
+        	//xSemaphoreTake(semMutex,(TickType_t) 100);
+        	turn_on_led_color('R');
+//        	for(uint8_t i = 0; i < adc_index; i++)
 //        	{
-//        		sprintf(adc_val, "ADC Values %d : %d\n\r", index, adc_buffer[index]);
-//        		log_string_detail(log_level_a, ADCTask, adc_val);
+//        		//circular_buf_get(adcBuffer, &adc_array[index]);
+////        		sprintf(adc_val, "ADC Values %d : %d\n\r", i, adc_array[i]);
+////        		log_string_detail(log_level_a, ADCTask, adc_val);
 //        	}
-//        	log_string("DMA Start");
-//            DMA_SetCallback(&g_DMA_Handle, DMA_Callback, NULL);
-//            DMA_PrepareTransfer(&transferConfig, adc_buffer, sizeof(adc_buffer[0]), dsp_buffer, sizeof(dsp_buffer[0]), sizeof(adc_buffer),
-//                                kDMA_MemoryToMemory);
-//            DMA_SubmitTransfer(&g_DMA_Handle, &transferConfig, kDMA_EnableInterrupt);
-//        	DMA_StartTransfer(&g_DMA_Handle);
-//        }
+        	log_string("DMA Start");
+        	turn_on_led_color('B');
+            DMA_SetCallback(&g_DMA_Handle, DMA_Callback, NULL);
+            DMA_PrepareTransfer(&transferConfig, adc_array, sizeof(adc_array[0]), dsp_buffer, sizeof(dsp_buffer[0]), 128,
+                                kDMA_MemoryToMemory);
+            DMA_SubmitTransfer(&g_DMA_Handle, &transferConfig, kDMA_EnableInterrupt);
+        	DMA_StartTransfer(&g_DMA_Handle);
+        	adcBuffer->count=0;
+        }
+
+        vTaskDelayUntil(&PreviousWakeTime, dacTASKPERIODMS);
+    }
+}
+
+/*!
+ * @brief Task prvQueueReceiveTask waiting for message.
+ */
+static void dacTask(void *pvParameters)
+{
+	TickType_t PreviousWakeTime = xTaskGetTickCount();
+    for (;;)
+    {
+//		if(semMutex != NULL)
+//		{
+//			if(xSemaphoreTake(semMutex,(TickType_t) 100) == pdTRUE)
+//			{
+//				turn_on_led_color('G');
+//				xSemaphoreGive(semMutex);
+//			}
+//		}
+    	toggle_led_color('G');
+    	DAC_SetBufferValue(DAC0, 0U, dac_lookup_table[dac_index]);
+    	dac_index++;
+    	if(dac_index == 50)
+    		dac_index = 0;
+
+    	//toggle_led_color('B');
+//    	sprintf(dac_format, "DAC Values: \t%d", dac_lookup_table[dac_index]);
 //
-//        vTaskDelayUntil(&PreviousWakeTime, dacTASKPERIODMS);
-//    }
-//}
 //
-///*!
-// * @brief Task prvQueueReceiveTask waiting for message.
-// */
-//static void dacTask(void *pvParameters)
+//    	if(log_level_a == 1)
+//    		log_string_detail(Debug, DACTask, dac_format);
+        vTaskDelayUntil(&PreviousWakeTime, dacTASKPERIODMS);
+    }
+}
+
+static void dspTask(void *pvParameters)
+{
+		char avg[30], maxi[30], mini[30], std_dev[30];
+		uint32_t average = 0;
+		float variance_sum = 0;
+		uint16_t max = 0;
+		uint16_t min = 65535;
+		uint32_t standard_deviation = 0;
+	    for (;;)
+	    {
+	        for(uint8_t index = 0; index < BUFF_LENGTH; index++)
+	        {
+	        	average += dsp_buffer[index];
+	        	if(dsp_buffer[index] > max)
+	        	{
+	        		max = dsp_buffer[index];
+	        	}
+	        	if(dsp_buffer[index] < min)
+	        	{
+	        		min = dsp_buffer[index];
+	        	}
+	        }
+
+	        for(uint8_t index = 0; index < BUFF_LENGTH; index++)
+	        {
+	        	variance_sum = variance_sum + pow((dsp_buffer[index] - average), 2);
+	        }
+	        variance_sum = variance_sum / BUFF_LENGTH;
+	        standard_deviation = sqrt(variance_sum);
+	        sprintf(avg, "Average : %d\n\r", average / 64);
+	        sprintf(maxi, "Max     : %d\n\r", max);
+	        sprintf(mini, "Min     : %d\n\r", min);
+	        sprintf(std_dev, "SD      : %d\n\r", standard_deviation);
+	        log_string_detail(log_level_a, DSPTask, avg);
+	        log_string_detail(log_level_a, DSPTask, maxi);
+	        log_string_detail(log_level_a, DSPTask, mini);
+	        log_string_detail(log_level_a, DSPTask, std_dev);
+
+	        if(program_count == 5)
+	        {
+	        	xSemaphoreGive(semMutex);
+	        	vTaskDelete(ADC_Handle);
+	        	vTaskDelete(DAC_Handle);
+	        	vTaskDelete(DSP_Handle);
+	        }
+	        vTaskSuspend(DSP_Handle);
+	    }
+}
+
+//static void vDACTimerCallback(TimerHandle_t xTimer)
 //{
-//	TickType_t PreviousWakeTime = xTaskGetTickCount();
-//    for (;;)
-//    {
+//	//TickType_t PreviousWakeTime = xTaskGetTickCount();
 ////		if(semMutex != NULL)
 ////		{
 ////			if(xSemaphoreTake(semMutex,(TickType_t) 100) == pdTRUE)
@@ -244,86 +321,11 @@ int main(void)
 //    		dac_index = 0;
 //
 //    	toggle_led_color('B');
-////    	sprintf(dac_format, "DAC Values: \t%d", dac_lookup_table[dac_index]);
-////
-////
-////    	if(log_level_a == 1)
-////    		log_string_detail(Debug, DACTask, dac_format);
-//        vTaskDelayUntil(&PreviousWakeTime, dacTASKPERIODMS);
-//    }
+//    	sprintf(dac_format, "DAC Values: \t%d", dac_lookup_table[dac_index]);
+//
+//    	if(log_level_a == 1)
+//    		log_string_detail(Debug, DACTask, dac_format);
 //}
-//
-//static void dspTask(void *pvParameters)
-//{
-//		char avg[20], maxi[20], mini[20], std_dev[20];
-//		float average = 0;
-//		float variance_sum = 0;
-//		uint16_t max = 0;
-//		uint16_t min = 0xffff;
-//		float standard_deviation = 0;
-//	    for (;;)
-//	    {
-//	        for(uint8_t index = 0; index < BUFF_LENGTH; index++)
-//	        {
-//	        	average += dsp_buffer[index];
-//	        	if(dsp_buffer[index] > max)
-//	        	{
-//	        		max = dsp_buffer[index];
-//	        	}
-//	        	if(dsp_buffer[index] < min)
-//	        	{
-//	        		min = dsp_buffer[index];
-//	        	}
-//	        }
-//
-//	        for(uint8_t index = 0; index < BUFF_LENGTH; index++)
-//	        {
-//	        	variance_sum = variance_sum + pow((dsp_buffer[index] - average), 2);
-//	        }
-//	        variance_sum = variance_sum / (float) BUFF_LENGTH;
-//	        standard_deviation = sqrt(variance_sum);
-//	        sprintf(avg, "Average : %d\n\r", (uint16_t)(float) average / 64);
-//	        sprintf(maxi, "Max     : %d\n\r", max);
-//	        sprintf(mini, "Min     : %d\n\r", min);
-//	        sprintf(std_dev, "SD      : %d\n\r", standard_deviation);
-//	        log_string_detail(log_level_a, DSPTask, avg);
-//	        log_string_detail(log_level_a, DSPTask, maxi);
-//	        log_string_detail(log_level_a, DSPTask, mini);
-//	        log_string_detail(log_level_a, DSPTask, std_dev);
-//
-//	        if(program_count == 5)
-//	        {
-//	        	xSemaphoreGive(semMutex);
-//	        	vTaskDelete(ADC_Handle);
-//	        	vTaskDelete(DAC_Handle);
-//	        	vTaskDelete(DSP_Handle);
-//	        }
-//	        vTaskSuspend(&DSP_Handle);
-//	    }
-//}
-
-static void vDACTimerCallback(TimerHandle_t xTimer)
-{
-	//TickType_t PreviousWakeTime = xTaskGetTickCount();
-//		if(semMutex != NULL)
-//		{
-//			if(xSemaphoreTake(semMutex,(TickType_t) 100) == pdTRUE)
-//			{
-//				turn_on_led_color('G');
-//				xSemaphoreGive(semMutex);
-//			}
-//		}
-    	DAC_SetBufferValue(DAC0, 0U, dac_lookup_table[dac_index]);
-    	dac_index++;
-    	if(dac_index == 50)
-    		dac_index = 0;
-
-    	toggle_led_color('B');
-    	sprintf(dac_format, "DAC Values: \t%d", dac_lookup_table[dac_index]);
-
-    	if(log_level_a == 1)
-    		log_string_detail(Debug, DACTask, dac_format);
-}
 
 /*!
  * @brief tick hook is executed every tick.
@@ -333,34 +335,11 @@ void vApplicationTickHook(void)
 //    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     static uint32_t ulCount = 0;
 
-    /* The RTOS tick hook function is enabled by setting configUSE_TICK_HOOK to
-    1 in FreeRTOSConfig.h.
-
-    "Give" the semaphore on every 500th tick interrupt. */
     ulCount++;
     if (ulCount >= 500UL)
     {
-        /* This function is called from an interrupt context (the RTOS tick
-        interrupt),    so only ISR safe API functions can be used (those that end
-        in "FromISR()".
-
-        xHigherPriorityTaskWoken was initialised to pdFALSE, and will be set to
-        pdTRUE by xSemaphoreGiveFromISR() if giving the semaphore unblocked a
-        task that has equal or higher priority than the interrupted task. */
-//        xSemaphoreGiveFromISR(xEventSemaphore, &xHigherPriorityTaskWoken);
         ulCount = 0UL;
     }
-
-    /* If xHigherPriorityTaskWoken is pdTRUE then a context switch should
-    normally be performed before leaving the interrupt (because during the
-    execution of the interrupt a task of equal or higher priority than the
-    running task was unblocked).  The syntax required to context switch from
-    an interrupt is port dependent, so check the documentation of the port you
-    are using.
-
-    In this case, the function is running in the context of the tick interrupt,
-    which will automatically check for the higher priority task to run anyway,
-    so no further action is required. */
 }
 
 /*!
@@ -368,14 +347,6 @@ void vApplicationTickHook(void)
  */
 void vApplicationMallocFailedHook(void)
 {
-    /* The malloc failed hook is enabled by setting
-    configUSE_MALLOC_FAILED_HOOK to 1 in FreeRTOSConfig.h.
-
-    Called if a call to pvPortMalloc() fails because there is insufficient
-    free memory available in the FreeRTOS heap.  pvPortMalloc() is called
-    internally by FreeRTOS API functions that create tasks, queues, software
-    timers, and semaphores.  The size of the FreeRTOS heap is set by the
-    configTOTAL_HEAP_SIZE configuration constant in FreeRTOSConfig.h. */
     for (;;)
         ;
 }
