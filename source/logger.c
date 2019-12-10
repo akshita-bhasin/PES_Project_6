@@ -25,7 +25,7 @@ void log_string_detail(log_level logLevel, function_name funcName, char * str)
 	char * func = get_func_name(funcName);
 	PRINTF("%s",func);
  	PRINTF("\tTime from SysTick: \t%d: %d: %d: %d\t",  timestamp_value.hour, timestamp_value.minute, timestamp_value.second, timestamp_value.decisec);
-	PRINTF("%s\r\n", str);
+	PRINTF("%s", str);
 }
 
 /* function name : log_string
@@ -58,10 +58,10 @@ void log_char(char ch)
 
 /* function name : log_integer
  * return type : void
- * parameters : uint8_t num - number, char type - number is decimal or hexadecimal
+ * parameters : double num - number, char type - number is decimal or hexadecimal
  * @brief : prints a number to the terminal depending on its type
  */
-void log_integer(uint8_t num, char type)
+void log_integer(double num, char type)
 {
 	char print_format[100];
 	if(type == 'd')
@@ -72,14 +72,14 @@ void log_integer(uint8_t num, char type)
 	{
 		PRINTF(print_format, "0x%X\n\r", num);
 	}
+	else if((type == 'f') | (type=='F'))
+	{
+		PRINTF("%f\n\r", num);
+	}
 	else
 	{
 		PRINTF(print_format, "%d\n\r", num);
 	}
-
-	timestampt_t timestamp_value;
-	timestamp_value = get_timestamp();
- 	PRINTF("Time from SysTick: \t%d: %d: %d: %d\n\r",  timestamp_value.hour, timestamp_value.minute, timestamp_value.second, timestamp_value.decisec);
 }
 
 /* function name : get_func_name
@@ -91,28 +91,17 @@ char* get_func_name(function_name func_name)
 {
 	switch(func_name)
 	{
-#ifdef DEBUG_LOG
-		case init_UART0: return "Init_UART0- initializes UART0: ";
+	if(log_level_a == 1)
+	{
+		case Adc16_init: return "ADC16_Init- initializes ADC16 configuration: ";
 							break;
-		case Uart0_getchar: return "UART0_getchar- gets a character from the user when receiver is ready to receive: ";
+		case DACTask: return "DAC_Task- Task to perform DAC operations: ";
 							break;
-		case Uart0_putchar: return "UART0_putchar- puts character back on terminal when transmitter is ready to transmit: ";
+		case DSPTask: return "DSP_Task- Task to perform DSP calculations: ";
 							break;
-		case Tx_available: return "Tx_available- checks if transmitter available: ";
+		case ADCTask: return "ADC_Task- Task to perform ADC operations: ";
 							break;
-		case Rx_available: return "Rx_available- checks if receiver available: ";
-							break;
-		case Uart0_rx_chars_available: return "Uart0_rx_chars_available- size of receiver circular buffer available: ";
-							break;
-		case Uart0_get_rx_char: return "Uart0_get_rx_char- pops one item from the receiver buffer: ";
-							break;
-		case send_String_Poll: return "send_String_Poll- sends entire string of characters using UART polling: ";
-							break;
-		case send_String: return "send_String- sends string of characters using UART interrupt: ";
-							break;
-		case Uart_echo: return "Uart_echo- echo mode operations performed: ";
-							break;
-		case Uart_application: return "Uart_application- application mode operations performed: ";
+		case Dma_CallBack: return "Dma_Callback- call back funcion to do DMA Transfer: ";
 							break;
 		case Circular_buf_init: return "Circular_buf_init- uses malloc and initializes circular buffer: ";
 						break;
@@ -138,70 +127,19 @@ char* get_func_name(function_name func_name)
 								break;
 		case Circular_buffer_realloc: return "Circular_buffer_realloc - reallocates memeory when an overflow happens: ";
 										break;
-		case Count_characters: return "Count_characters- keeps a count of alphabets received on UART: ";
+		case LoggerTimerCallback: return "vLoggerTimerCallback- callback function for logger timer deciseconds calculation: ";
 								break;
-		case Application_report: return "Application_report- used to print report in application mode: ";
+		case Timestamp_Init: return "Timestamp_Init- init function to create logger software timer: ";
 								break;
-		case Get_timestamp: return "Get_timestamp- gets timestamp using SysTick Timer with a 0.1 second and displays in HH:mm:ss:n!: ";
+		case Get_timestamp: return "Get_timestamp- gets timestamp using Software Timer with a 0.1 second and displays in HH:mm:ss:n!: ";
 							break;
 		case Turn_on_LED_color: return "turn_on_LED_Color- turns on chosen color of LED: ";
 								break;
-#endif
-
-#ifdef NORMAL
-		case init_UART0: return "Init_UART0: ";
-							break;
-		case Uart0_getchar: return "UART0_getchar: ";
-							break;
-		case Uart0_putchar: return "UART0_putchar: ";
-							break;
-		case Tx_available: return "Tx_available: ";
-							break;
-		case Rx_available: return "Rx_available: ";
-							break;
-		case Uart0_rx_chars_available: return "Uart0_rx_chars_available: ";
-							break;
-		case Uart0_get_rx_char: return "Uart0_get_rx_char: ";
-							break;
-		case send_String_Poll: return "send_String_Poll: ";
-							break;
-		case send_String: return "send_String: ";
-							break;
-		case Uart_echo: return "Uart_echo: ";
-							break;
-		case Uart_application: return "Uart_application: ";
-							break;
-		case Circular_buf_init: return "Circular_buf_init: ";
-						break;
-		case Circular_buf_free: return "Circular_buf_free: ";
-							break;
-		case Circular_buf_reset: return "Circular_buf_reset: ";
-							break;
-		case Circular_buf_put2: return "Circular_buf_put2: ";
-							break;
-		case Circular_buf_get: return "Circular_buf_get: ";
+		case Toggle_LED_color: return "toggle_LED_Color- toggles chosen color of LED: ";
 								break;
-		case Circular_buf_empty: return "Circular_buf_empty: ";
-								break;
-		case Circular_buf_full: return "Circular_buf_full: ";
-								break;
-		case Circular_buf_capacity: return "Circular_buf_capacity: ";
-								break;
-		case Circular_buf_size: return "Circular_buf_size: ";
-								break;
-		case Circular_buf_initialized: return "Circular_buf_initialized: ";
-								break;
-		case Circular_buf_valid: return "Circular_buf_valid: ";
-								break;
-		case Count_characters: return "Count_characters: ";
-								break;
-		case Application_report: return "Application_report: ";
-								break;
-		case Get_timestamp: return "Get_timestamp: ";
-							break;
-		case Turn_on_LED_color: return "turn_on_LED_Color: ";
-								break;
-#endif
+	}
+	else
+		return " ";
 	}
 	return " ";
 }

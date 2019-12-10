@@ -21,6 +21,7 @@
 //function prototypes
 void turn_on_led_color(char color);
 void toggle_led_color(char color);
+void turn_off_led_color(char color);
 void delay_led(uint16_t num);
 
 

@@ -30,13 +30,6 @@ typedef enum
 	DSPTask,
 	ADCTask,
 	Dma_CallBack,
-	Timestamp_Init,
-	Uart0_rx_chars_available,
-	Uart0_get_rx_char,
-	send_String_Poll,
-	send_String,
-	Uart_echo,
-	Uart_application,
 	Circular_buf_init,
 	Circular_buf_free,
 	Circular_buf_reset,
@@ -49,8 +42,8 @@ typedef enum
 	Circular_buf_initialized,
 	Circular_buf_valid,
 	Circular_buffer_realloc,
-	Count_characters,
-	Application_report,
+	LoggerTimerCallback,
+	Timestamp_Init,
 	Get_timestamp,
 	Turn_on_LED_color,
 	Toggle_LED_color
@@ -62,7 +55,7 @@ char* get_log_level(log_level logLevel);
 void log_string_detail(log_level logLevel, function_name func_name, char * str);
 
 // Log_integer – display an integer
-void log_integer(uint8_t num, char type);
+void log_integer(double num, char type);
 
 // Log_char - display a character
 void log_char(char ch);

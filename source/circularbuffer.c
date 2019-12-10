@@ -10,7 +10,7 @@
 
 cbuf_handle_t circular_buf_init(size_t size)
 {
-	uint8_t* buffer_init;
+	uint16_t* buffer_init;
 	cbuf_handle_t cbuf = (circ_bbuf_t*)malloc(sizeof(circ_bbuf_t));
 	buffer_init = (uint16_t*)malloc(sizeof(uint16_t)*size);
 	cbuf->buffer = buffer_init;
@@ -148,7 +148,7 @@ buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint16_t * data) //pop
 
 buffer_errors circular_buffer_realloc(cbuf_handle_t cbuf, size_t newSize)
 {
-	uint8_t data;
+	uint16_t data;
 	if(circular_buf_full(cbuf) == buffer_full)
 	{
 		cbuf_handle_t buffer_realloc = circular_buf_init(newSize);

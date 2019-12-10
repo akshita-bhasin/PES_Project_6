@@ -10,6 +10,13 @@
 extern uint32_t deciseconds;
 #define mainSOFTWARE_TIMER_PERIOD_MS (100 / portTICK_PERIOD_MS)
 TimerHandle_t xLoggerExampleTimer = NULL;
+
+/*
+ * function name : TimeStamp_Init
+ * parameters : void
+ * return type : void
+ * brief : creates and starts logger software timer
+ */
 void TimeStamp_Init(void) {
     xLoggerExampleTimer = xTimerCreate("LoggerTimer", mainSOFTWARE_TIMER_PERIOD_MS, pdTRUE, (void *)0, vLoggerTimerCallback);
     xTimerStart(xLoggerExampleTimer, 0);
@@ -37,6 +44,12 @@ timestampt_t get_timestamp(void)
 	return timestamp_value;
 }
 
+/*
+ * function name : vLoggerTimerCallback
+ * parameters : TimeHandle_t xTimer
+ * return type : void
+ * brief : increments for every decisecond
+ */
 void vLoggerTimerCallback(TimerHandle_t xTimer)
 {
     /* The timer has expired.  Count the number of times this happens.  The

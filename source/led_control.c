@@ -70,6 +70,12 @@ void turn_on_led_color(char color)
 	}
 }
 
+/*
+ * function name : toggle_led_color
+ * parameter : char color - code for which LED to glow
+ * return type : void
+ * @brief : toggles led color depending on the color parameter
+ */
 void toggle_led_color(char color)
 {
 	if(color == 'R') {
@@ -106,3 +112,29 @@ void toggle_led_color(char color)
 			log_string_detail(Test, Toggle_LED_color, "LED GREEN in Test Mode");
 	}
 }
+
+/*
+ * function name : turn_off_led_color
+ * parameter : char color - code for which LED to turn off
+ * return type : void
+ * @brief : turns off led color depending on the color parameter
+ */
+void turn_off_led_color(char color)
+{
+	if(color == 'R') {
+		LED_BLUE_OFF(); /*!< Turn off target LED_BLUE */
+		LED_GREEN_OFF(); /*!< Turn off target LED_GREEN */
+		LED_RED_OFF(); /*!< Turn on target LED_RED */
+	}
+	else if(color == 'B') {
+    	LED_RED_OFF(); /*!< Turn off target LED_RED */
+		LED_GREEN_OFF(); /*!< Turn off target LED_GREEN */
+    	LED_BLUE_OFF();
+	}
+	else if(color == 'G') {
+		LED_RED_OFF(); /*!< Turn off target LED_RED */
+		LED_BLUE_OFF(); /*!< Turn off target LED_BLUE */
+		LED_GREEN_OFF();
+	}
+}
+
